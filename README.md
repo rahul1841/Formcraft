@@ -112,7 +112,8 @@ Requires **Node.js 20.9+** and a MongoDB database (local `mongod` or a free Mong
 | `SEED_ADMIN_PASSWORD` | No | `formcraft123` | Password for that demo admin (min 8 characters). |
 | `SEED_ADMIN_NAME` | No | `Demo Admin` | Display name for that demo admin. |
 
-`.env.local` is git-ignored; `.env.example` is the committed template.
+Next.js and the seeder both read `.env.local` first and then `.env`, so either filename works. Both are
+git-ignored; `.env.example` is the committed template.
 
 ---
 
@@ -137,7 +138,7 @@ Requires **Node.js 20.9+** and a MongoDB database (local `mongod` or a free Mong
 | Framework | Next.js 16 (App Router, React Server Components, route handlers) |
 | Language | TypeScript 5 in `strict` mode |
 | UI | React 19, Tailwind CSS v4 (CSS-first config in `src/app/globals.css`), lucide-react icons |
-| Drag & drop | `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/modifiers` |
+| Drag & drop | `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` |
 | Charts | Recharts 3 |
 | Database | MongoDB with mongoose 9 |
 | Validation | Zod 4, shared by the client renderer and the API |
@@ -200,7 +201,7 @@ The one exception is the export endpoint, which streams a file.
 | --- | --- | --- | --- |
 | `POST` | `/api/auth/register` | No | Create the admin account and start a session. |
 | `POST` | `/api/auth/login` | No | Sign in and start a session. |
-| `POST` | `/api/auth/logout` | No | Clear the session cookie. |
+| `POST` `GET` | `/api/auth/logout` | No | Clear the session cookie. `GET` is accepted so a plain link works. |
 | `GET` | `/api/auth/me` | Yes | Current user; `401` when signed out. |
 | `GET` | `/api/forms?search=&status=&sort=` | Yes | List the owner's forms plus dashboard stats. |
 | `POST` | `/api/forms` | Yes | Create a form, optionally from `templateId`. |
@@ -218,7 +219,7 @@ The one exception is the export endpoint, which streams a file.
 
 Page routes: `/` (landing), `/login`, `/register`, `/admin` (dashboard),
 `/admin/forms/:id/edit` (builder), `/admin/forms/:id/responses` (responses + analytics),
-`/f/:slug` (public form).
+`/admin/forms/:id` (redirects to the builder), `/f/:slug` (public form).
 
 ---
 
@@ -285,6 +286,41 @@ Compound index on `{ ownerId, updatedAt }` backs the dashboard listing.
 
 ---
 
+## Deployment
+
+The app is a standard Next.js application with no build-time database access, so any Node host works.
+On Vercel:
+
+1. Import the GitHub repository — the framework, build command and output directory are all detected.
+2. Add **two** environment variables. Nothing else is required at runtime:
+
+   | Variable | Value |
+   | --- | --- |
+   | `MONGODB_URI` | Your Atlas SRV string, including the database name in the path |
+   | `AUTH_SECRET` | A fresh 32+ character secret — **not** the one from your local `.env` |
+
+   `MONGODB_DB` and the three `SEED_ADMIN_*` variables are only read by `npm run seed`, which never runs
+   on the host. `NEXT_PUBLIC_APP_URL` is optional; without it every link falls back to the browser's own
+   origin, and only the `og:url` social-preview tag on `/f/<slug>` is affected.
+
+3. **Allow your host to reach Atlas.** Serverless functions have dynamic egress IPs, so add `0.0.0.0/0`
+   under **Database & Network Access → IP Access List**. Skipping this is the most common failure: the
+   build goes green and then every request fails at runtime, because no page touches MongoDB at build time.
+
+4. Deploy, open `/register`, and create the first admin account.
+
+Two things to know before a deployment is public:
+
+- **Registration is open by default.** Anyone who finds `/register` can create an admin account. Gate it,
+  or register once and then block the route, before sharing the URL.
+- **Scope the database user.** Give it `readWrite` on this app's database only, rather than a cluster-wide
+  account shared with your other projects.
+
+If you set `NEXT_PUBLIC_APP_URL` after the first deploy, redeploy — `NEXT_PUBLIC_*` values are inlined at
+build time, so saving the variable alone changes nothing.
+
+---
+
 ## Troubleshooting
 
 **`MONGODB_URI is not set`**
@@ -296,6 +332,13 @@ reads env files at startup.
 For a local database, check that `mongod` is actually running on the port in your URI. For Atlas, add your
 current IP under **Network Access → IP Access List** (a laptop on a new network needs re-adding), confirm the
 cluster is not paused, and URL-encode any special characters in the password inside the SRV string.
+
+**`bad auth : authentication failed` / `MongoDB rejected the connection credentials`**
+Atlas reached you and refused the credentials, so networking is fine — only the password is wrong. It is the
+**database user's** password (Atlas → **Database & Network Access → Database Users**), not your Atlas account
+password. Atlas never displays an existing password, so reset it with **Edit → Edit Password**, or add a new
+user. Remember that database users belong to a single Atlas project: a user created in one project cannot log
+into another project's cluster.
 
 **A form author's custom regex (Field → Advanced validation) seems to be ignored**
 Author-supplied patterns run on the public submit route against respondent input, so a catastrophically
