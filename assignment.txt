@@ -1,0 +1,16 @@
+Task: Develop a web application for creating, customizing, and managing no-code dynamic forms.
+Requirements:
+Form Creation & Customization:
+Allow the admin to create fully customizable forms with an intuitive, no-code interface.
+Support a variety of field types: text fields, dropdowns (with multiple options), checkboxes, radio buttons, etc.
+Enable customization of form layout, design, and styling (e.g., colours, fonts, and field alignment).
+Form Management:
+Provide an easy-to-use interface for the admin to create, edit, customize, and save forms.
+Allow the admin to manage multiple forms, including viewing, duplicating, Editing, or deleting them.
+User Interaction:
+Users should be able to access the created forms, fill them out, and submit responses seamlessly.
+Ensure that the form is responsive and accessible on various devices.
+Data Storage & Retrieval:
+Save all user responses in a database for efficient storage and retrieval.
+Provide options for the admin to view, download, or analyse collected data.
+The web application should be intuitive, user-friendly, and require no technical expertise for form creation and customization.

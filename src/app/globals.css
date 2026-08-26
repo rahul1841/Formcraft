@@ -1,0 +1,547 @@
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------- */
+/*                          Admin design tokens (Tailwind)                     */
+/* -------------------------------------------------------------------------- */
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+
+  --animate-fade-in: fade-in 180ms ease-out;
+  --animate-slide-up: slide-up 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-pop: pop 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: #f8fafc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-sans);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+  background-clip: content-box;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                        Rendered form ("ncf") styles                         */
+/*   Driven entirely by the CSS variables produced in src/lib/theme.ts so the   */
+/*   builder preview and the live form always match.                            */
+/* -------------------------------------------------------------------------- */
+
+.ncf-root {
+  font-family: var(--ncf-font);
+  font-size: var(--ncf-font-size);
+  color: var(--ncf-text);
+  line-height: 1.55;
+}
+
+.ncf-card {
+  width: 100%;
+  max-width: var(--ncf-max-width);
+  margin: 0 auto;
+  background: var(--ncf-card);
+  border: 1px solid var(--ncf-border);
+  border-radius: calc(var(--ncf-radius) * 1.25);
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 0.04),
+    0 12px 32px -12px rgb(15 23 42 / 0.12);
+  overflow: hidden;
+}
+
+.ncf-cover {
+  display: block;
+  width: 100%;
+  height: 168px;
+  object-fit: cover;
+}
+
+.ncf-card-body {
+  padding: clamp(20px, 4vw, 40px);
+}
+
+.ncf-title {
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ncf-text);
+  margin: 0;
+}
+
+.ncf-description {
+  margin-top: 8px;
+  color: var(--ncf-muted);
+  white-space: pre-wrap;
+}
+
+.ncf-header {
+  padding-bottom: var(--ncf-gap);
+  border-bottom: 1px solid var(--ncf-border);
+  margin-bottom: var(--ncf-gap);
+}
+
+.ncf-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--ncf-gap);
+  align-items: start;
+}
+
+.ncf-col-full { grid-column: span 6; }
+.ncf-col-half { grid-column: span 3; }
+.ncf-col-third { grid-column: span 2; }
+
+@media (max-width: 640px) {
+  .ncf-col-half,
+  .ncf-col-third { grid-column: span 6; }
+}
+
+.ncf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.ncf-field[data-align="center"] { align-items: center; text-align: center; }
+.ncf-field[data-align="right"] { align-items: flex-end; text-align: right; }
+.ncf-field[data-align="center"] .ncf-control,
+.ncf-field[data-align="right"] .ncf-control { width: 100%; }
+
+.ncf-label {
+  font-weight: 600;
+  font-size: 0.94em;
+  color: var(--ncf-text);
+  text-align: var(--ncf-label-align);
+  display: block;
+  width: 100%;
+}
+
+.ncf-required {
+  color: var(--ncf-danger);
+  margin-left: 3px;
+}
+
+.ncf-help {
+  font-size: 0.85em;
+  color: var(--ncf-muted);
+  width: 100%;
+  text-align: var(--ncf-label-align);
+}
+
+.ncf-error {
+  font-size: 0.85em;
+  color: var(--ncf-danger);
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ncf-control {
+  width: 100%;
+  font: inherit;
+  color: var(--ncf-text);
+  background: var(--ncf-card);
+  border: 1px solid var(--ncf-border);
+  border-radius: var(--ncf-radius-sm);
+  padding: 11px 13px;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+  appearance: none;
+  outline: none;
+}
+
+.ncf-control::placeholder { color: var(--ncf-muted); opacity: 0.75; }
+
+.ncf-control:focus-visible,
+.ncf-control:focus {
+  border-color: var(--ncf-primary);
+  box-shadow: 0 0 0 3px var(--ncf-primary-ring);
+}
+
+.ncf-root[data-input-style="filled"] .ncf-control {
+  background: var(--ncf-input-bg);
+  border-color: transparent;
+}
+.ncf-root[data-input-style="filled"] .ncf-control:focus {
+  background: var(--ncf-card);
+  border-color: var(--ncf-primary);
+}
+
+.ncf-root[data-input-style="underlined"] .ncf-control {
+  border-width: 0 0 1.5px 0;
+  border-radius: 0;
+  padding-left: 2px;
+  padding-right: 2px;
+  background: transparent;
+}
+.ncf-root[data-input-style="underlined"] .ncf-control:focus {
+  box-shadow: 0 1px 0 0 var(--ncf-primary);
+}
+
+.ncf-control[aria-invalid="true"] {
+  border-color: var(--ncf-danger);
+}
+
+textarea.ncf-control {
+  resize: vertical;
+  min-height: 92px;
+  line-height: 1.5;
+}
+
+select.ncf-control {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% + 2px), calc(100% - 13px) calc(50% + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+/* ------------------------------ option lists ------------------------------ */
+
+.ncf-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.ncf-options[data-layout="horizontal"] {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.ncf-options[data-layout="grid"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.ncf-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 13px;
+  border: 1px solid var(--ncf-border);
+  border-radius: var(--ncf-radius-sm);
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+  background: var(--ncf-card);
+  min-width: 0;
+}
+.ncf-option:hover { border-color: var(--ncf-primary); }
+/* The real input is visually hidden, so the row has to show its focus ring. */
+.ncf-option:has(input:focus-visible),
+.ncf-consent:has(input:focus-visible) {
+  outline: 2px solid var(--ncf-primary);
+  outline-offset: 2px;
+  border-color: var(--ncf-primary);
+}
+.ncf-option[data-checked="true"] {
+  border-color: var(--ncf-primary);
+  background: var(--ncf-primary-soft);
+}
+.ncf-option-text { min-width: 0; overflow-wrap: anywhere; }
+
+.ncf-tick {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--ncf-border);
+  background: var(--ncf-card);
+  display: grid;
+  place-items: center;
+  transition: all 140ms ease;
+}
+.ncf-tick[data-shape="circle"] { border-radius: 999px; }
+.ncf-tick[data-shape="square"] { border-radius: 5px; }
+.ncf-tick[data-checked="true"] {
+  border-color: var(--ncf-primary);
+  background: var(--ncf-primary);
+  color: var(--ncf-primary-contrast);
+}
+.ncf-tick[data-shape="circle"] > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--ncf-primary-contrast);
+}
+
+.ncf-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+/* -------------------------------- rating --------------------------------- */
+
+.ncf-stars {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ncf-star {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--ncf-border);
+  transition: transform 120ms ease, color 120ms ease;
+  line-height: 0;
+}
+.ncf-star:hover { transform: scale(1.12); }
+.ncf-star[data-active="true"] { color: var(--ncf-primary); }
+.ncf-star:focus-visible {
+  outline: 2px solid var(--ncf-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --------------------------------- range ---------------------------------- */
+
+.ncf-range-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.ncf-range {
+  flex: 1;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ncf-primary-soft);
+  outline: none;
+  cursor: pointer;
+}
+.ncf-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--ncf-primary);
+  border: 2px solid var(--ncf-card);
+  box-shadow: 0 1px 4px rgb(15 23 42 / 0.3);
+  cursor: grab;
+}
+.ncf-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--ncf-primary);
+  border: 2px solid var(--ncf-card);
+  cursor: grab;
+}
+.ncf-range-value {
+  min-width: 44px;
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+  border-radius: var(--ncf-radius-sm);
+  background: var(--ncf-primary-soft);
+  color: var(--ncf-primary);
+}
+
+/* -------------------------------- layout ---------------------------------- */
+
+.ncf-heading {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ncf-text);
+  margin: 0;
+}
+.ncf-heading[data-level="1"] { font-size: 1.6em; }
+.ncf-heading[data-level="2"] { font-size: 1.28em; }
+.ncf-heading[data-level="3"] { font-size: 1.1em; }
+
+.ncf-paragraph {
+  color: var(--ncf-muted);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.ncf-divider {
+  border: none;
+  border-top: 1px solid var(--ncf-border);
+  width: 100%;
+  margin: 4px 0;
+}
+
+.ncf-number-badge {
+  color: var(--ncf-muted);
+  font-variant-numeric: tabular-nums;
+  margin-right: 6px;
+  font-weight: 500;
+}
+
+/* -------------------------------- actions --------------------------------- */
+
+.ncf-actions {
+  margin-top: calc(var(--ncf-gap) * 1.25);
+  display: flex;
+}
+.ncf-actions[data-align="left"] { justify-content: flex-start; }
+.ncf-actions[data-align="center"] { justify-content: center; }
+.ncf-actions[data-align="right"] { justify-content: flex-end; }
+.ncf-actions[data-align="full"] > .ncf-submit { width: 100%; }
+
+.ncf-submit {
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 26px;
+  border-radius: var(--ncf-radius-sm);
+  border: 1.5px solid var(--ncf-primary);
+  background: var(--ncf-primary);
+  color: var(--ncf-primary-contrast);
+  cursor: pointer;
+  transition: transform 120ms ease, background 140ms ease, box-shadow 140ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+}
+.ncf-submit:hover:not(:disabled) {
+  background: var(--ncf-primary-hover);
+  border-color: var(--ncf-primary-hover);
+}
+.ncf-submit:active:not(:disabled) { transform: translateY(1px); }
+.ncf-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+.ncf-submit:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ncf-primary-ring);
+}
+
+.ncf-root[data-button-style="outline"] .ncf-submit {
+  background: transparent;
+  color: var(--ncf-primary);
+}
+.ncf-root[data-button-style="outline"] .ncf-submit:hover:not(:disabled) {
+  background: var(--ncf-primary-soft);
+  border-color: var(--ncf-primary);
+}
+.ncf-root[data-button-style="soft"] .ncf-submit {
+  background: var(--ncf-primary-soft);
+  color: var(--ncf-primary);
+  border-color: transparent;
+}
+.ncf-root[data-button-style="soft"] .ncf-submit:hover:not(:disabled) {
+  background: var(--ncf-primary-ring);
+}
+
+/* ------------------------------- progress --------------------------------- */
+
+.ncf-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ncf-primary-soft);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.ncf-progress-bar {
+  height: 100%;
+  background: var(--ncf-primary);
+  border-radius: 999px;
+  transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ncf-progress-label {
+  font-size: 0.82em;
+  color: var(--ncf-muted);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+/* -------------------------------- states ---------------------------------- */
+
+.ncf-success {
+  text-align: center;
+  padding: clamp(28px, 6vw, 56px) 24px;
+}
+.ncf-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: var(--ncf-primary-soft);
+  color: var(--ncf-primary);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+}
+.ncf-footer-note {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.8em;
+  color: var(--ncf-muted);
+}
+.ncf-alert {
+  border: 1px solid var(--ncf-danger);
+  background: color-mix(in srgb, var(--ncf-danger) 10%, transparent);
+  color: var(--ncf-danger);
+  border-radius: var(--ncf-radius-sm);
+  padding: 11px 14px;
+  font-size: 0.9em;
+  margin-bottom: var(--ncf-gap);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+@media print {
+  .ncf-card { box-shadow: none; }
+}
